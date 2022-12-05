@@ -1,0 +1,63 @@
+pragma solidity ^0.5.1;
+
+// Define NFT contract
+contract NFT {
+// Define variables for token ID, security grade, and owner address
+uint256 tokenId;
+uint256 securityGrade;
+address owner;
+
+// Define events for when an NFT is sold and when an NFT is bought
+event Sold(uint256 tokenId, uint256 securityGrade);
+event Bought(uint256 tokenId, uint256 securityGrade);
+
+// Define function for selling an NFT
+function sell(uint256 _tokenId, uint256 _securityGrade) public {
+// Check if caller is the owner of the NFT
+require(msg.sender == owner, "Only owner can sell NFT");
+// Set token ID and security grade
+tokenId = _tokenId;
+securityGrade = _securityGrade;
+// Emit event that NFT is sold
+emit Sold(tokenId, securityGrade);
+}
+
+// Define function for buying an NFT
+function buy(uint256 _tokenId, uint256 _securityGrade) public payable {
+// Check if caller has enough funds to buy the NFT
+require(msg.value >= _securityGrade, "Insufficient funds");
+// Set token ID, security grade, and new owner
+tokenId = _tokenId;
+securityGrade = _securityGrade;
+owner = msg.sender;
+// Emit event that NFT is bought
+emit Bought(tokenId, securityGrade);
+}
+}
+
+// Define main contract for selling 1000 NFTs separately
+contract Main {
+// Define array for storing 1000 NFTs
+NFT[] public nfts;
+
+// Define function for creating 1000 NFTs
+function createNFTs() public {
+// Create 1000 NFTs and add to array
+for (uint256 i = 0; i < 1000; i++) {
+nfts.push(new NFT());
+}
+}
+
+// Define function for selling an NFT
+function sellNFT(uint256 _tokenId, uint256 _securityGrade) public {
+// Call sell function on NFT with given token ID
+nfts[_tokenId].sell(_tokenId, _securityGrade);
+}
+
+// Define function for buying an NFT
+function buyNFT(uint256 _tokenId, uint256 _securityGrade) public payable {
+// Call buy function on NFT with given token ID
+nfts[_tokenId].buy(_tokenId, _securityGrade);
+}
+}
+
